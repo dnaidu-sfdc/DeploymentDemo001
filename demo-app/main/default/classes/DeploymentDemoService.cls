@@ -59,3 +59,4 @@ public with sharing class DeploymentDemoService {
         }
     }
 }
+// Gate test: end-to-end pipeline verification.
