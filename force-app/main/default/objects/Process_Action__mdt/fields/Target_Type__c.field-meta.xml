@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Target_Type__c</fullName>
-    <label>Target Type</label>
-    <type>Text</type>
-    <length>40</length>
-    <description>How the action is performed: Message (informational), Navigation, or Flow.</description>
-</CustomField>

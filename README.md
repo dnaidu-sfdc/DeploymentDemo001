@@ -1,18 +1,38 @@
-# Salesforce DX Project: Next Steps
+# Bedrock Deployment Demo
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+A minimal Salesforce app used to demonstrate an end-to-end DevSecOps workflow:
+**org → version control → automated quality gate → auto-deploy → modular 2GP packaging.**
 
-## How Do You Plan to Deploy Your Changes?
+## What's in the module (`demo-app/`)
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+| Component | Name | Purpose |
+|---|---|---|
+| Custom Object | `Deployment_Demo__c` | Demo record (Status, Notes, Amount, Processed) |
+| Apex | `DeploymentDemoService` | Invocable, bulk-safe "mark processed" logic + unit tests |
+| Flow | `Bedrock_Deployment_Demo_Process` | Record-triggered; calls the Apex |
+| Permission Set | `Bedrock_Deployment_Demo` | Grants object/field/tab/Apex access |
 
-## Configure Your Salesforce DX Project
+Everything is in **SFDX source format** and packaged as an **Unlocked Package (2GP)**:
+`Bedrock Deployment Demo` (see `sfdx-project.json`).
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+## CI/CD (`.github/workflows/`)
 
-## Read All About It
+| Workflow | Trigger | Does |
+|---|---|---|
+| `pr-validate.yml` | PR → `main` | Code Analyzer scan + check-only deploy running Apex tests |
+| `deploy.yml` | push → `main` | JWT auth + deploy `demo-app` + run Apex tests |
 
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+Setup (Connected App + JWT + GitHub secrets): see [`.github/CICD-SETUP.md`](.github/CICD-SETUP.md).
+
+## Quick start
+
+```bash
+# Deploy to a scratch org / sandbox
+sf project deploy start --source-dir demo-app
+sf org assign permset --name Bedrock_Deployment_Demo
+sf apex run test --class-names DeploymentDemoServiceTest --result-format human
+
+# Build a package version (requires a Dev Hub)
+sf package version create --package "Bedrock Deployment Demo" \
+  --installation-key-bypass --code-coverage --wait 30
+```

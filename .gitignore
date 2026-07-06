@@ -48,6 +48,20 @@ server.key
 *.p12
 jwt/
 
+# Not part of the deployment-demo repo (kept local only)
+docs/
+force-app/
+manifest/
+scripts/
+.husky/
+.vscode/
+.prettierignore
+.prettierrc
+eslint.config.js
+jest.config.js
+package.json
+package-lock.json
+
 # Python Salesforce Functions
 **/__pycache__/
 **/.venv/
