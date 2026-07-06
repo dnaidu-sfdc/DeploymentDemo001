@@ -336,3 +336,46 @@
 - Average-skill offshore risk is mitigated by the QA Automation Engineer + standards, not by hiring more seniors everywhere.
 
 **[DIAGRAM]** *(optional)* persona-to-lifecycle-stage map — can add if useful
+
+---
+
+## Slide 16 — Live Demo: Org → VCS → Pipeline → Org
+
+**[ON-SLIDE]**
+- **The app (a self-contained module):** `Deployment_Demo__c` custom object (+ Status/Notes/Amount/Processed fields, tab) · **Apex** `DeploymentDemoService` (invocable, bulk-safe) + unit tests · **record-triggered Flow** that calls the Apex · **Permission Set** — the R12 checklist (object + Apex + Flow + permissions) in one slice
+- **What the walkthrough shows (R14 end-to-end):**
+  1. **Source of truth** — metadata in **SFDX source format** in Git → repo `DeploymentDemo001`, isolated in the `demo-app/` package directory
+  2. **Make a change on a `feature/*` branch → open a PR**
+  3. **Quality gate runs automatically** — GitHub Actions `pr-validate`: **Code Analyzer scan** + **check-only deploy** running Apex tests (nothing touches the org until it's green)
+  4. **Merge to `main` → auto-deploy** — `deploy` workflow authenticates via **JWT** and deploys to the target org from the repo (R13)
+  5. **Modular, versioned packaging** — the module is an **Unlocked Package (2GP)** `Bedrock Deployment Demo`; show a package **version installed into a second org** (cross-org, versioned)
+- **Ties back to the strategy:** branching (S7) · packaging (S8) · pipeline (S10) · security gates (S11) · traceability/governance (S14)
+
+**[SPEAKER NOTES]**
+- Keep the code change tiny (one field label or one line of Apex) so the pipeline — not the coding — is the star.
+- Narrate the **gate**: the PR cannot merge until scan + tests pass; this is the "basic quality checks" requirement made real, and it's how we protect quality with mixed-skill offshore teams.
+- Emphasise **no human hand-deploys**: the pipeline (with JWT auth, secrets in GitHub) is the only thing that writes to the org — segregation of duties from the governance slide.
+- 2GP unlocked (not managed) because this is **internal org development**, not an AppExchange product — modular, versioned, dependency-aware, but we retain full source control.
+- Fallback: have the PR/Actions run and the package install **pre-recorded** in case of live network/org limits.
+
+---
+
+## Slide 17 — Executive Summary & Recommendation
+
+**[ON-SLIDE]**
+- **The ask:** move Bedrock from slow, manual, fragmented delivery to a **secure, automated, multi-partner DevSecOps capability**
+- **The recommendation (one line):** *Git as the single source of truth → modular Unlocked Packages → an automated CI/CD pipeline with security & quality gates → governed by a lightweight multi-SI operating model.*
+- **How we get there:** phased **12-month roadmap** — Foundation → Establish → Automate → Secure & Scale → Optimise/AI (value at every phase, risk retired progressively)
+- **Business outcomes**
+  - **Faster, predictable releases** — monthly release train instead of ad-hoc, error-prone deployments
+  - **Quality & compliance by design** — automated tests + scans + full traceability (regulated Healthcare/Financial)
+  - **Scales across 3–5 partners & offshore** — shared standards enforced by the system, not by trust
+  - **Ready for the future** — same pipeline handles Data 360, OmniStudio & Agentforce; AI accelerates delivery
+- **Proven, not just proposed:** the live demo runs the real thing end-to-end today
+- **Immediate next steps:** stand up the Program Architect + Release Manager · establish repos/branch model · build the reference pipeline (Phase 1)
+
+**[SPEAKER NOTES]**
+- Close by returning to the CTO's words: **speed without sacrificing quality or compliance** — every element on this slide maps to that.
+- Stress **value at every phase** — the business sees returns early (Phase 1–2), not only at month 12.
+- Reiterate the two critical first hires and the first concrete deliverable (reference pipeline) so there's a clear Monday-morning action.
+- End on the demo: this strategy is **already working in miniature** — de-risks the proposal.
