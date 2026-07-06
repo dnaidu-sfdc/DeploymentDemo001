@@ -1,11 +1,13 @@
 name: PR Validate
 
-# Step 4 of the demo flow: when a feature/* branch is pushed, spin up a fresh,
-# throwaway scratch org, run the basic quality checks (static analysis + Apex
-# tests) against it, then delete it. This runs on the push event (not the PR
-# event) so it fires reliably even when auto-pr opens the PR via the Actions
-# token. The resulting "Scratch-org quality gate" check attaches to the head
-# commit, satisfies branch protection, and auto-merge takes over on green.
+# Step 4 of the demo flow: when a feature/* branch is pushed, run the basic
+# quality checks against the AFCAPQA1 sandbox:
+#   1. Salesforce Code Analyzer (static analysis)
+#   2. a CHECK-ONLY (validate) deploy that runs the Apex tests but does NOT
+#      write anything to the org (--dry-run)
+# Runs on the push event so it fires reliably even when auto-pr opens the PR via
+# the Actions token. The resulting "Scratch-org quality gate" check attaches to
+# the head commit, satisfies branch protection, and auto-merge takes over on green.
 
 on:
   push:
@@ -21,7 +23,7 @@ jobs:
     name: Scratch-org quality gate
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout PR head
+      - name: Checkout
         uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
@@ -34,21 +36,14 @@ jobs:
       - name: Decode JWT server key
         run: echo "${{ secrets.SF_JWT_KEY }}" | base64 --decode > server.key
 
-      - name: Authenticate to Dev Hub (JWT)
+      - name: Authenticate to AFCAPQA1 sandbox (JWT)
         run: |
           sf org login jwt \
-            --client-id "${{ secrets.SF_DEVHUB_CONSUMER_KEY }}" \
+            --client-id "${{ secrets.SF_SANDBOX_CONSUMER_KEY }}" \
             --jwt-key-file server.key \
-            --username "${{ secrets.SF_DEVHUB_USERNAME }}" \
-            --instance-url "https://login.salesforce.com" \
-            --alias devhub --set-default-dev-hub
-
-      - name: Create ephemeral scratch org
-        run: |
-          sf org create scratch \
-            --definition-file config/project-scratch-def.json \
-            --alias ci-scratch --duration-days 1 \
-            --target-dev-hub devhub --set-default
+            --username "${{ secrets.SF_SANDBOX_USERNAME }}" \
+            --instance-url "https://test.salesforce.com" \
+            --alias sandbox --set-default
 
       - name: Static analysis (Salesforce Code Analyzer)
         run: |
@@ -59,19 +54,14 @@ jobs:
             --severity-threshold 2 \
             --output-file code-analyzer-results.json
 
-      - name: Deploy source to scratch org
-        run: sf project deploy start --source-dir demo-app
-
-      - name: Assign permission set + run Apex tests
+      - name: Validate deploy (check-only) + run Apex tests
         run: |
-          sf org assign permset --name Bedrock_Deployment_Demo
-          sf apex run test \
-            --class-names DeploymentDemoServiceTest \
-            --code-coverage --result-format human --wait 20
-
-      - name: Delete scratch org
-        if: always()
-        run: sf org delete scratch --target-org ci-scratch --no-prompt || true
+          sf project deploy start \
+            --dry-run \
+            --source-dir demo-app \
+            --test-level RunSpecifiedTests \
+            --tests DeploymentDemoServiceTest \
+            --wait 30
 
       - name: Remove key
         if: always()
