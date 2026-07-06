@@ -45,6 +45,8 @@ $RECYCLE.BIN/
 # Secrets / CI keys (JWT bearer auth) - never commit
 *.key
 server.key
+*.crt
+server.crt
 *.p12
 jwt/
 
