@@ -6,24 +6,24 @@ basic quality checks → automatic deploy to a Salesforce org from the repo.**
 ## The flow
 
 ```
-feature/* push ─► [auto-pr] opens PR + enables auto-merge
+feature/* push ─► [auto-pr] opens PR into main
                           │
-                    reviewer approves
+        [pr-validate] Code Analyzer scan → check-only (validate) deploy + Apex tests
+                          │  (required status check, runs against AFCAPQA1)
+                    gate green → click "Merge" in GitHub
                           │
-        [pr-validate] create scratch org → Code Analyzer scan → deploy → Apex tests → delete org
-                          │  (required status check)
-                    auto-merge to main
-                          │
-        [deploy] deploy demo-app source → AFCAPQQA1 sandbox → run Apex tests
+        [deploy] deploy demo-app source → AFCAPQA1 sandbox → run Apex tests
 ```
 
 | Workflow | Trigger | Does |
 |---|---|---|
-| `auto-pr.yml` | push to `feature/**` | Opens a PR into `main`, enables auto-merge |
-| `pr-validate.yml` | PR **approved** | Ephemeral scratch org: scan + deploy + Apex tests (the quality gate) |
-| `deploy.yml` | push/merge to `main` | Deploys `demo-app` to the **AFCAPQQA1** sandbox + runs tests |
+| `auto-pr.yml` | push to `feature/**` | Opens a PR into `main` |
+| `pr-validate.yml` | push to `feature/**` | Quality gate: Code Analyzer scan + **check-only** deploy + Apex tests against **AFCAPQA1** (nothing written to the org) |
+| `deploy.yml` | push/merge to `main` | Deploys `demo-app` to the **AFCAPQA1** sandbox + runs tests |
 
-Both org-touching workflows authenticate headlessly with the **JWT bearer flow**.
+All org-touching workflows authenticate headlessly with the **JWT bearer flow**.
+
+> Note: the gate runs on the **push** event (not the PR event) so it fires reliably even though `auto-pr` opens the PR with the Actions token. The merge is a **manual one-click** in the GitHub UI — a token-driven auto-merge would not trigger `deploy.yml`.
 
 ---
 
@@ -72,12 +72,13 @@ base64 -i server.key | pbcopy
 
 ## 5. Repo settings that make auto-merge + the gate work
 
-- Settings → General → Pull Requests → **Allow auto-merge** = on
+- Settings → Actions → General → Workflow permissions → **Allow GitHub Actions to create and approve pull requests** = on (required for `auto-pr.yml`)
 - Settings → Branches → **Branch protection rule** for `main`:
-  - Require a pull request before merging · **Require 1 approval**
+  - Require a pull request before merging
   - **Require status checks to pass** → add **`Scratch-org quality gate`** (the `pr-validate` job)
+  - No approval requirement (single-owner repo — GitHub blocks approving your own PR, so the automated quality gate is the merge gate)
 
-With those on: approve the PR → the gate runs in a scratch org → on green, GitHub auto-merges → `deploy.yml` ships to AFCAPQQA1.
+With those on: push a `feature/*` branch → PR opens automatically → the gate runs → on green the **Merge** button unlocks → click it → `deploy.yml` ships to AFCAPQA1.
 
 ---
 
@@ -96,5 +97,7 @@ If that succeeds, CI will too.
 git checkout -b feature/demo-change
 # make a small edit in demo-app/ ...
 git commit -am "demo: tweak" && git push -u origin feature/demo-change
-# → PR opens automatically; approve it in the GitHub UI and watch the Actions tab.
+# → PR opens automatically; the gate runs on the push (Actions tab).
+# → when the "Scratch-org quality gate" check is green, click Merge in the PR.
+# → the merge triggers deploy.yml, which deploys demo-app to AFCAPQA1.
 ```
