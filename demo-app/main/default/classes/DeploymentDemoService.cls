@@ -59,3 +59,4 @@ public with sharing class DeploymentDemoService {
         }
     }
 }
+// Pipeline rehearsal: verifying PR gate triggers on open.
