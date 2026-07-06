@@ -1,0 +1,133 @@
+<template>
+    <lightning-card title={cardTitle} icon-name="standard:flow">
+        <template lwc:if={isLoading}>
+            <div class="slds-var-p-around_medium slds-align_absolute-center">
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </div>
+        </template>
+
+        <template lwc:if={hasError}>
+            <div class="slds-var-p-around_medium slds-text-color_error">{errorMessage}</div>
+        </template>
+
+        <template lwc:if={hasActions}>
+            <!-- Chevron (path) presentation -->
+            <template lwc:if={isChevron}>
+                <div class="slds-path slds-var-p-horizontal_small">
+                    <div class="slds-grid slds-path__track">
+                        <div class="slds-grid slds-path__scroller-container">
+                            <div class="slds-path__scroller" role="application">
+                                <div class="slds-path__scroller_inner">
+                                    <ul class="slds-path__nav" role="listbox">
+                                        <template for:each={actions} for:item="action">
+                                            <li
+                                                key={action.key}
+                                                class="slds-path__item slds-is-incomplete"
+                                                role="presentation">
+                                                <a
+                                                    class="slds-path__link"
+                                                    href="#"
+                                                    role="option"
+                                                    data-key={action.key}
+                                                    onclick={handleActionClick}>
+                                                    <span class="slds-path__stage">
+                                                        <lightning-icon
+                                                            icon-name={action.icon}
+                                                            size="x-small"
+                                                            variant="inverse">
+                                                        </lightning-icon>
+                                                    </span>
+                                                    <span class="slds-path__title">{action.label}</span>
+                                                </a>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Button presentation -->
+            <template lwc:if={isButtons}>
+                <div class="slds-var-p-around_small">
+                    <lightning-button-group>
+                        <template for:each={actions} for:item="action">
+                            <lightning-button
+                                key={action.key}
+                                label={action.label}
+                                icon-name={action.icon}
+                                data-key={action.key}
+                                onclick={handleActionClick}>
+                            </lightning-button>
+                        </template>
+                    </lightning-button-group>
+                </div>
+            </template>
+        </template>
+
+        <template lwc:if={isEmpty}>
+            <div class="slds-var-p-around_medium slds-text-color_weak">
+                No processes have been configured for this object yet.
+            </div>
+        </template>
+    </lightning-card>
+
+    <!-- Informational ("Message") modal: used by actions whose Target Type is Message. -->
+    <template lwc:if={showModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button
+                        class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close"
+                        onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" size="small" variant="inverse"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-modal__title slds-hyphenate">{selectedAction.label}</h2>
+                    <p class="slds-var-m-top_x-small slds-text-body_small">{selectedAction.actionType}</p>
+                </header>
+                <div class="slds-modal__content slds-var-p-around_medium">
+                    <p>{selectedAction.targetName}</p>
+                    <p class="slds-var-m-top_small slds-text-color_weak slds-text-body_small">
+                        Context record: {recordId}
+                    </p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={closeModal}>Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick={closeModal}>Proceed</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <!-- Flow modal: hosts <lightning-flow>, which runs the configured flow and is handed the
+         host record Id via flow-input-variables. The flow then "takes over" the experience. -->
+    <template lwc:if={showFlowModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button
+                        class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close"
+                        onclick={closeFlow}>
+                        <lightning-icon icon-name="utility:close" size="small" variant="inverse"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-modal__title slds-hyphenate">{selectedAction.label}</h2>
+                </header>
+                <div class="slds-modal__content slds-var-p-around_medium">
+                    <lightning-flow
+                        flow-api-name={flowApiName}
+                        flow-input-variables={flowInputVariables}
+                        onstatuschange={handleFlowStatus}>
+                    </lightning-flow>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Target_Name__c</fullName>
+    <label>Target Name</label>
+    <type>Text</type>
+    <length>255</length>
+    <description>Meaning depends on Target Type: Flow API name (Flow), the relationship field whose Id to open e.g. AccountId (Navigation), or the message body (Message).</description>
+</CustomField>

@@ -1,0 +1,69 @@
+<mxfile host="app.diagrams.net" type="device" version="24.0.0">
+  <diagram id="bedrock-deploy-packaging" name="Slide 8 - Modularisation &amp; Packaging">
+    <mxGraphModel dx="1200" dy="800" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1340" pageHeight="880" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="&lt;b&gt;Bedrock &#8212; Modularisation &amp; Packaging Strategy&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;fontSize=15;fontColor=#1A1A1A;" vertex="1" parent="1"><mxGeometry x="20" y="8" width="1100" height="24" as="geometry" /></mxCell>
+        <mxCell id="subtitle" value="Unlocked Packages (2GP) by domain &#183; versioned dependencies &#183; base package reused across both production orgs" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#5B6770;" vertex="1" parent="1"><mxGeometry x="20" y="32" width="1200" height="20" as="geometry" /></mxCell>
+
+        <!-- ===== PACKAGE DEPENDENCY MODEL ===== -->
+        <mxCell id="bandPkg" value="" style="rounded=0;html=1;fillColor=#F7FAF6;strokeColor=#CDE3C4;strokeWidth=1;" vertex="1" parent="1"><mxGeometry x="20" y="62" width="1300" height="392" as="geometry" /></mxCell>
+        <mxCell id="lblPkg" value="&lt;b&gt;PACKAGE MODEL &amp; DEPENDENCIES (per domain)&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=11;fontColor=#2E7D32;" vertex="1" parent="1"><mxGeometry x="30" y="68" width="500" height="18" as="geometry" /></mxCell>
+
+        <!-- Base package -->
+        <mxCell id="pkgBase" value="&lt;b&gt;Base / Shared Package&lt;/b&gt;&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;common objects &#183; utilities &#183; data model&lt;br/&gt;versioned &#183; reused everywhere&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#0277BD;strokeWidth=2;fontSize=11;fontColor=#01579B;" vertex="1" parent="1"><mxGeometry x="540" y="100" width="260" height="70" as="geometry" /></mxCell>
+
+        <!-- Project packages -->
+        <mxCell id="pkgP1" value="&lt;b&gt;Project 1 Package&lt;/b&gt;&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;Partner A feature area&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontSize=10;" vertex="1" parent="1"><mxGeometry x="60" y="230" width="200" height="56" as="geometry" /></mxCell>
+        <mxCell id="pkgP2" value="&lt;b&gt;Project 2 Package&lt;/b&gt;&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;Partner B feature area&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontSize=10;" vertex="1" parent="1"><mxGeometry x="300" y="230" width="200" height="56" as="geometry" /></mxCell>
+        <mxCell id="pkgP3" value="&lt;b&gt;Project 3 Package&lt;/b&gt;&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;Partner C &#183; second org&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontSize=10;" vertex="1" parent="1"><mxGeometry x="1080" y="230" width="200" height="56" as="geometry" /></mxCell>
+
+        <!-- Specialist modules -->
+        <mxCell id="pkgOmni" value="OmniStudio Module&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;IP / FlexCards &#183; deploy ordering&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#E65100;fontSize=10;" vertex="1" parent="1"><mxGeometry x="540" y="230" width="200" height="56" as="geometry" /></mxCell>
+        <mxCell id="pkgData" value="Data 360 Module&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;DMOs / mappings &#183; often unpackaged&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#E65100;fontSize=10;" vertex="1" parent="1"><mxGeometry x="540" y="300" width="200" height="56" as="geometry" /></mxCell>
+        <mxCell id="pkgAgent" value="Agentforce Module&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;agents / topics / actions&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#E65100;fontSize=10;" vertex="1" parent="1"><mxGeometry x="540" y="370" width="200" height="52" as="geometry" /></mxCell>
+
+        <!-- Non-packageable -->
+        <mxCell id="unpk" value="Unpackaged Source&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;profiles &#183; settings &#183; non-packageable metadata&lt;br/&gt;deployed with explicit ordering&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F2F4F7;strokeColor=#5B6770;fontSize=10;dashed=1;" vertex="1" parent="1"><mxGeometry x="820" y="360" width="240" height="66" as="geometry" /></mxCell>
+
+        <!-- dependency edges (depend on base) -->
+        <mxCell id="dp1" value="depends on" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#0277BD;strokeWidth=1.5;endArrow=block;fontSize=9;fontColor=#0277BD;" edge="1" parent="1" source="pkgP1" target="pkgBase"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="dp2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#0277BD;strokeWidth=1.5;endArrow=block;" edge="1" parent="1" source="pkgP2" target="pkgBase"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="dp3" value="depends on" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#0277BD;strokeWidth=1.5;endArrow=block;fontSize=9;fontColor=#0277BD;" edge="1" parent="1" source="pkgP3" target="pkgBase"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="dp4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#0277BD;strokeWidth=1.5;endArrow=block;" edge="1" parent="1" source="pkgOmni" target="pkgBase"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="dp5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#0277BD;strokeWidth=1.5;endArrow=block;" edge="1" parent="1" source="pkgData" target="pkgBase"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="dp6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#0277BD;strokeWidth=1.5;endArrow=block;" edge="1" parent="1" source="pkgAgent" target="pkgBase"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- ===== DEPLOY TARGETS ===== -->
+        <mxCell id="bandOrg" value="" style="rounded=0;html=1;fillColor=#EEF3FC;strokeColor=#C5D6F5;strokeWidth=1;" vertex="1" parent="1"><mxGeometry x="20" y="470" width="1300" height="150" as="geometry" /></mxCell>
+        <mxCell id="lblOrg" value="&lt;b&gt;DEPLOY TARGETS (multi-org reuse)&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=11;fontColor=#3B6FD4;" vertex="1" parent="1"><mxGeometry x="30" y="476" width="500" height="18" as="geometry" /></mxCell>
+
+        <mxCell id="deployOrg1" value="&lt;b&gt;Production Org 1&lt;/b&gt;&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;Base + Project 1 + Project 2 + OmniStudio + Data 360 + Agentforce&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8EEFB;strokeColor=#1A1A66;strokeWidth=2;fontSize=11;fontColor=#1A1A66;" vertex="1" parent="1"><mxGeometry x="120" y="510" width="440" height="80" as="geometry" /></mxCell>
+        <mxCell id="deployOrg2" value="&lt;b&gt;Production Org 2&lt;/b&gt;&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;Base (same version) + Project 3&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8EEFB;strokeColor=#1A1A66;strokeWidth=2;fontSize=11;fontColor=#1A1A66;" vertex="1" parent="1"><mxGeometry x="760" y="510" width="440" height="80" as="geometry" /></mxCell>
+
+        <mxCell id="eo1" value="install versioned packages" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#3B6FD4;strokeWidth=1.5;endArrow=block;fontSize=9;fontColor=#3B6FD4;" edge="1" parent="1" source="pkgBase" target="deployOrg1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="eo2" value="install base (same version) + P3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#3B6FD4;strokeWidth=1.5;endArrow=block;fontSize=9;fontColor=#3B6FD4;" edge="1" parent="1" source="pkgP3" target="deployOrg2"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- ===== LEGEND ===== -->
+        <mxCell id="lgBox" value="" style="rounded=1;arcSize=3;html=1;fillColor=#FAFAFA;strokeColor=#CCCCCC;dashed=1;" vertex="1" parent="1"><mxGeometry x="20" y="636" width="1300" height="92" as="geometry" /></mxCell>
+        <mxCell id="lgTitle" value="&lt;b&gt;LEGEND&lt;/b&gt;" style="text;html=1;align=left;fontSize=11;fontColor=#1A1A1A;" vertex="1" parent="1"><mxGeometry x="32" y="642" width="200" height="20" as="geometry" /></mxCell>
+        <mxCell id="lga" value="" style="rounded=0;html=1;fillColor=#E1F5FE;strokeColor=#0277BD;strokeWidth=2;" vertex="1" parent="1"><mxGeometry x="40" y="668" width="24" height="16" as="geometry" /></mxCell>
+        <mxCell id="lgat" value="Base / shared unlocked package (reused across orgs)" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="1"><mxGeometry x="70" y="666" width="360" height="20" as="geometry" /></mxCell>
+        <mxCell id="lgb" value="" style="rounded=0;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;" vertex="1" parent="1"><mxGeometry x="40" y="694" width="24" height="16" as="geometry" /></mxCell>
+        <mxCell id="lgbt" value="Project unlocked package (per partner)" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="1"><mxGeometry x="70" y="692" width="360" height="20" as="geometry" /></mxCell>
+        <mxCell id="lgc" value="" style="rounded=0;html=1;fillColor=#FFF3E0;strokeColor=#E65100;" vertex="1" parent="1"><mxGeometry x="470" y="668" width="24" height="16" as="geometry" /></mxCell>
+        <mxCell id="lgct" value="Specialist module (OmniStudio / Data 360 / Agentforce)" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="1"><mxGeometry x="500" y="666" width="380" height="20" as="geometry" /></mxCell>
+        <mxCell id="lgd" value="" style="rounded=0;html=1;fillColor=#F2F4F7;strokeColor=#5B6770;dashed=1;" vertex="1" parent="1"><mxGeometry x="470" y="694" width="24" height="16" as="geometry" /></mxCell>
+        <mxCell id="lgdt" value="Unpackaged source (non-packageable metadata, ordered deploy)" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="1"><mxGeometry x="500" y="692" width="420" height="20" as="geometry" /></mxCell>
+        <mxCell id="lge" value="" style="rounded=0;html=1;fillColor=#E8EEFB;strokeColor=#1A1A66;strokeWidth=2;" vertex="1" parent="1"><mxGeometry x="930" y="668" width="24" height="16" as="geometry" /></mxCell>
+        <mxCell id="lget" value="Production org (deploy target)" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="1"><mxGeometry x="960" y="666" width="340" height="20" as="geometry" /></mxCell>
+        <mxCell id="lgf" style="endArrow=block;html=1;strokeColor=#0277BD;strokeWidth=1.5;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="930" y="702" as="sourcePoint" /><mxPoint x="982" y="702" as="targetPoint" /></mxGeometry></mxCell>
+        <mxCell id="lgft" value="Package dependency (depends on base)" style="text;html=1;align=left;fontSize=10;" vertex="1" parent="1"><mxGeometry x="990" y="692" width="320" height="20" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

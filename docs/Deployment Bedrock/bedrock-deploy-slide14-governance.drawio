@@ -1,0 +1,60 @@
+<mxfile host="app.diagrams.net" type="device" version="24.0.0">
+  <diagram id="bedrock-deploy-governance" name="Slide 14 - Governance">
+    <mxGraphModel dx="1200" dy="800" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1360" pageHeight="760" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="&lt;b&gt;Bedrock &#8212; Governance Structure&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;fontSize=15;fontColor=#1A1A1A;" vertex="1" parent="1"><mxGeometry x="20" y="8" width="1100" height="24" as="geometry" /></mxCell>
+        <mxCell id="subtitle" value="Program &#183; Architecture/Technical &#183; Data governance &#183; decision rights that keep a multi-SI program aligned" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#5B6770;" vertex="1" parent="1"><mxGeometry x="20" y="32" width="1250" height="20" as="geometry" /></mxCell>
+
+        <!-- Tier 1: Steering Committee -->
+        <mxCell id="steer" value="&lt;b&gt;PROGRAM STEERING COMMITTEE&lt;/b&gt;&lt;br/&gt;&lt;font style=&#39;font-size:10px&#39;&gt;CTO &#183; CIO &#183; Global Salesforce Lead &#183; Partner Delivery Leads&lt;/font&gt;&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;roadmap &#183; RAID &#183; budget &#183; weekly board status&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8EEFB;strokeColor=#1A1A66;strokeWidth=2;fontSize=11;fontColor=#1A1A66;" vertex="1" parent="1"><mxGeometry x="420" y="70" width="520" height="74" as="geometry" /></mxCell>
+
+        <!-- Tier 1b: PMO / Release Mgmt (under steering) -->
+        <mxCell id="pmo" value="&lt;b&gt;PMO / Release Management Board&lt;/b&gt;&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;release train &#183; cross-project dependencies &#183; go/no-go&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEF3FC;strokeColor=#3B6FD4;fontSize=10;" vertex="1" parent="1"><mxGeometry x="470" y="176" width="420" height="52" as="geometry" /></mxCell>
+
+        <!-- Tier 2: three boards -->
+        <mxCell id="arb" value="&lt;b&gt;Architecture Review Board (ARB)&lt;/b&gt;&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;chaired by Chief Architect&lt;br/&gt;design authority &#183; standards&lt;br/&gt;package/modularisation decisions&lt;br/&gt;design-review-before-build&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F7FAF6;strokeColor=#2E7D32;fontSize=10;spacing=4;" vertex="1" parent="1"><mxGeometry x="120" y="270" width="330" height="110" as="geometry" /></mxCell>
+        <mxCell id="dgb" value="&lt;b&gt;Data Governance Board&lt;/b&gt;&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;data model sign-off (before project starts)&lt;br/&gt;Data 360 stewardship&lt;br/&gt;data quality &#183; PII / compliance&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#0277BD;fontSize=10;spacing=4;" vertex="1" parent="1"><mxGeometry x="515" y="270" width="330" height="110" as="geometry" /></mxCell>
+        <mxCell id="sec" value="&lt;b&gt;Security &amp; Compliance Board&lt;/b&gt;&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;RBAC &#183; secrets policy&lt;br/&gt;scan gates (SAST/DAST)&lt;br/&gt;segregation of duties &#183; audit&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FDF1F1;strokeColor=#C0392B;fontSize=10;spacing=4;" vertex="1" parent="1"><mxGeometry x="910" y="270" width="330" height="110" as="geometry" /></mxCell>
+
+        <!-- Tier 3: delivery squads -->
+        <mxCell id="sqA" value="Partner A Squad&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;Project 1&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#E65100;fontSize=10;" vertex="1" parent="1"><mxGeometry x="120" y="426" width="330" height="52" as="geometry" /></mxCell>
+        <mxCell id="sqB" value="Partner B Squad&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;Project 2&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#E65100;fontSize=10;" vertex="1" parent="1"><mxGeometry x="515" y="426" width="330" height="52" as="geometry" /></mxCell>
+        <mxCell id="sqC" value="Partner C Squad&lt;br/&gt;&lt;font style=&#39;font-size:9px&#39;&gt;Project 3 (2nd org)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#E65100;fontSize=10;" vertex="1" parent="1"><mxGeometry x="910" y="426" width="330" height="52" as="geometry" /></mxCell>
+
+        <!-- vertical connectors (clean, no crossing) -->
+        <mxCell id="c1" style="html=1;strokeColor=#5B6770;strokeWidth=2;endArrow=block;" edge="1" parent="1" source="steer" target="pmo"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="c2" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#5B6770;strokeWidth=1.5;endArrow=block;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="pmo" target="arb"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="c3" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#5B6770;strokeWidth=1.5;endArrow=block;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="pmo" target="dgb"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="c4" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#5B6770;strokeWidth=1.5;endArrow=block;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="pmo" target="sec"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="c5" style="html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=block;" edge="1" parent="1" source="arb" target="sqA"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="c6" style="html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=block;" edge="1" parent="1" source="dgb" target="sqB"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="c7" style="html=1;strokeColor=#9AA3B2;strokeWidth=1.5;endArrow=block;" edge="1" parent="1" source="sec" target="sqC"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- Traceability strip -->
+        <mxCell id="trBand" value="" style="rounded=0;html=1;fillColor=#FAF7FF;strokeColor=#D9C9F0;strokeWidth=1;" vertex="1" parent="1"><mxGeometry x="20" y="506" width="1320" height="110" as="geometry" /></mxCell>
+        <mxCell id="trLbl" value="&lt;b&gt;REQUIREMENT TRACEABILITY (compliance backbone)&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=11;fontColor=#5E35B1;" vertex="1" parent="1"><mxGeometry x="32" y="512" width="500" height="18" as="geometry" /></mxCell>
+
+        <mxCell id="t1" value="Business&lt;br/&gt;Requirement" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EDE7F6;strokeColor=#5E35B1;fontSize=10;" vertex="1" parent="1"><mxGeometry x="40" y="540" width="150" height="52" as="geometry" /></mxCell>
+        <mxCell id="t2" value="Design&lt;br/&gt;Approval (ARB)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EDE7F6;strokeColor=#5E35B1;fontSize=10;" vertex="1" parent="1"><mxGeometry x="270" y="540" width="150" height="52" as="geometry" /></mxCell>
+        <mxCell id="t3" value="Work Item&lt;br/&gt;(Jira)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EDE7F6;strokeColor=#5E35B1;fontSize=10;" vertex="1" parent="1"><mxGeometry x="500" y="540" width="150" height="52" as="geometry" /></mxCell>
+        <mxCell id="t4" value="Branch / PR" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EDE7F6;strokeColor=#5E35B1;fontSize=10;" vertex="1" parent="1"><mxGeometry x="730" y="540" width="150" height="52" as="geometry" /></mxCell>
+        <mxCell id="t5" value="Test + Scan&lt;br/&gt;Evidence" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EDE7F6;strokeColor=#5E35B1;fontSize=10;" vertex="1" parent="1"><mxGeometry x="960" y="540" width="150" height="52" as="geometry" /></mxCell>
+        <mxCell id="t6" value="Release&lt;br/&gt;Notes" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E8EEFB;strokeColor=#1A1A66;fontSize=10;fontColor=#1A1A66;" vertex="1" parent="1"><mxGeometry x="1170" y="540" width="150" height="52" as="geometry" /></mxCell>
+
+        <mxCell id="tt1" style="html=1;strokeColor=#5E35B1;strokeWidth=1.5;endArrow=block;" edge="1" parent="1" source="t1" target="t2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="tt2" style="html=1;strokeColor=#5E35B1;strokeWidth=1.5;endArrow=block;" edge="1" parent="1" source="t2" target="t3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="tt3" style="html=1;strokeColor=#5E35B1;strokeWidth=1.5;endArrow=block;" edge="1" parent="1" source="t3" target="t4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="tt4" style="html=1;strokeColor=#5E35B1;strokeWidth=1.5;endArrow=block;" edge="1" parent="1" source="t4" target="t5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="tt5" style="html=1;strokeColor=#5E35B1;strokeWidth=1.5;endArrow=block;" edge="1" parent="1" source="t5" target="t6"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- Cadence footnote -->
+        <mxCell id="cad" value="&lt;b&gt;Cadence:&lt;/b&gt; sprint (2-wk) &#183; release train (monthly) &#183; ARB (weekly) &#183; steering (bi-weekly) &#183; board status (weekly)" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;fontColor=#5B6770;" vertex="1" parent="1"><mxGeometry x="20" y="626" width="1320" height="24" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

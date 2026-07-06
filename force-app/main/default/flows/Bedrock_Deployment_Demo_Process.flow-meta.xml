@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Record-triggered flow for the DevSecOps demo. When a Deployment Demo is created or updated with Status = In Progress (and not yet processed), it hands the record to DeploymentDemoService Apex to close it out. Demonstrates a Flow and Apex executing together.</description>
+    <environments>Default</environments>
+    <interviewLabel>Bedrock Deployment Demo Process {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Bedrock Deployment Demo Process</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <actionCalls>
+        <name>Mark_Processed</name>
+        <label>Mark Processed (Apex)</label>
+        <locationX>176</locationX>
+        <locationY>288</locationY>
+        <actionName>DeploymentDemoService</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>recordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>DeploymentDemoService</nameSegment>
+    </actionCalls>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Mark_Processed</targetReference>
+        </connector>
+        <filterFormula>AND(ISPICKVAL({!$Record.Status__c}, &apos;In Progress&apos;), NOT({!$Record.Processed__c}))</filterFormula>
+        <object>Deployment_Demo__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

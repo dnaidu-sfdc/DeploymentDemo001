@@ -1,0 +1,7 @@
+.answer-box {
+    background-color: var(--slds-g-color-neutral-base-95, #f3f3f3);
+}
+
+.answer-text {
+    white-space: pre-wrap;
+}

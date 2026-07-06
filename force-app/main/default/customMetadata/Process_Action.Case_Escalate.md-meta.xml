@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>Case - Escalate</label>
+    <protected>false</protected>
+    <values>
+        <field>Object_API_Name__c</field>
+        <value xsi:type="xsd:string">Case</value>
+    </values>
+    <values>
+        <field>Action_Label__c</field>
+        <value xsi:type="xsd:string">Escalate</value>
+    </values>
+    <values>
+        <field>Action_Type__c</field>
+        <value xsi:type="xsd:string">Update</value>
+    </values>
+    <values>
+        <field>Display_Style__c</field>
+        <value xsi:type="xsd:string">buttons</value>
+    </values>
+    <values>
+        <field>Icon__c</field>
+        <value xsi:type="xsd:string">utility:priority</value>
+    </values>
+    <values>
+        <field>Sort_Order__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>Target_Type__c</field>
+        <value xsi:type="xsd:string">Message</value>
+    </values>
+    <values>
+        <field>Target_Name__c</field>
+        <value xsi:type="xsd:string">Escalating this case to tier-2 support (demonstrates reuse on another object).</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

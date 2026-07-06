@@ -1,0 +1,39 @@
+<template>
+    <lightning-card title={cardTitle} icon-name="standard:account">
+        <span slot="actions" class="slds-text-body_small slds-text-color_weak">
+            {recordCountLabel}
+        </span>
+
+        <template lwc:if={isLoading}>
+            <div class="slds-var-p-around_medium slds-align_absolute-center">
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </div>
+        </template>
+
+        <template lwc:if={hasError}>
+            <div class="slds-var-p-around_medium slds-text-color_error">
+                {errorMessage}
+            </div>
+        </template>
+
+        <template lwc:if={hasRows}>
+            <div class="slds-var-p-horizontal_x-small">
+                <lightning-datatable
+                    key-field="accountId"
+                    data={rows}
+                    columns={columns}
+                    sorted-by={sortedBy}
+                    sorted-direction={sortedDirection}
+                    onsort={handleSort}
+                    hide-checkbox-column>
+                </lightning-datatable>
+            </div>
+        </template>
+
+        <template lwc:if={isEmpty}>
+            <div class="slds-var-p-around_medium slds-text-color_weak">
+                No indirect account relationships were found for this account.
+            </div>
+        </template>
+    </lightning-card>
+</template>

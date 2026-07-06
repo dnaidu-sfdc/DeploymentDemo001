@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Simple demo object for the DevSecOps CI/CD walkthrough (Development Lifecycle &amp; Deployment badge).</description>
+    <enableActivities>true</enableActivities>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <label>Deployment Demo</label>
+    <nameField>
+        <label>Deployment Demo Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Deployment Demos</pluralLabel>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>
