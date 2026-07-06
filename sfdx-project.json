@@ -1,12 +1,20 @@
 {
   "packageDirectories": [
     {
+      "path": "demo-app",
+      "default": true,
+      "package": "Bedrock Deployment Demo",
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT"
+    },
+    {
       "path": "force-app",
-      "default": true
+      "default": false
     }
   ],
   "name": "BedrockAVF",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "66.0"
+  "sourceApiVersion": "66.0",
+  "packageAliases": {}
 }

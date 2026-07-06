@@ -1,0 +1,53 @@
+name: Deploy to Org
+
+# Runs on every merge/push to main.
+# Proves "auto-deployed to an org from the repo" (R13): the source of truth (VCS)
+# drives the deployment. Runs the Apex tests as a release gate.
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy demo-app to target org
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Salesforce CLI
+        run: npm install --global @salesforce/cli
+
+      - name: Decode JWT server key
+        run: echo "${{ secrets.SF_JWT_KEY }}" | base64 --decode > server.key
+
+      - name: Authenticate to target org (JWT bearer)
+        run: |
+          sf org login jwt \
+            --client-id "${{ secrets.SF_CONSUMER_KEY }}" \
+            --jwt-key-file server.key \
+            --username "${{ secrets.SF_USERNAME }}" \
+            --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
+            --set-default
+
+      - name: Deploy to org + run Apex tests
+        run: |
+          sf project deploy start \
+            --source-dir demo-app \
+            --test-level RunSpecifiedTests \
+            --tests DeploymentDemoServiceTest \
+            --wait 30
+
+      - name: Remove key
+        if: always()
+        run: rm -f server.key

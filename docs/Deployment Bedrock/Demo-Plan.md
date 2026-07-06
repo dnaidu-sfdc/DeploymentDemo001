@@ -6,9 +6,9 @@
 ## Build status
 - [x] **Phase A metadata built** (local): `Deployment_Demo__c` object + fields (Status, Notes, Amount, Processed), tab, `DeploymentDemoService` Apex + test (bulk-safe, 3 tests), record-triggered Flow `Bedrock_Deployment_Demo_Process` (calls the Apex), permission set `Bedrock_Deployment_Demo`. Apex passes lint.
 - [x] **Deploy to scratch org + assign perm set + smoke test** — DONE on `test-luzuqcoxbcjg@example.com`: 10/10 components deployed (Succeeded, Deploy ID `0AfIo000006iAEaKAM`), perm set assigned, **3/3 Apex tests pass (100%)**.
-- [ ] Phase B — Git repo + branches
-- [ ] Phase C — 2GP package
-- [ ] Phase D — GitHub Actions CI/CD
+- [x] **Phase B — Git repo + push** — DONE: repo `main` committed and pushed to `https://github.com/dnaidu-sfdc/DeploymentDemo001.git`.
+- [~] **Phase C — 2GP package** — SCAFFOLDED: demo app isolated into `demo-app/` package dir; `sfdx-project.json` registers unlocked package **"Bedrock Deployment Demo"** (0.1.0.NEXT). Still to run: `sf package create` + `sf package version create` (needs Dev Hub).
+- [~] **Phase D — GitHub Actions CI/CD** — SCAFFOLDED: `.github/workflows/pr-validate.yml` (Code Analyzer scan + check-only deploy w/ tests) and `deploy.yml` (deploy demo-app + tests on merge). Setup guide at `.github/CICD-SETUP.md`. Still to do: create Connected App + add repo secrets (JWT).
 - [ ] Phase E — walkthrough rehearsal
 
 ---

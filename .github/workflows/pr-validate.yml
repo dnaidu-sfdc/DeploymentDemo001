@@ -1,0 +1,72 @@
+name: PR Validate
+
+# Runs on every pull request into main.
+# Proves the "basic quality checks" gate (R13): static analysis + a check-only
+# (validate) deploy that also runs the Apex tests. Nothing is written to the org.
+
+on:
+  pull_request:
+    branches: [main]
+
+# Cancel superseded runs on the same PR to save minutes.
+concurrency:
+  group: pr-validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Static analysis + validate deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Salesforce CLI
+        run: npm install --global @salesforce/cli
+
+      - name: Decode JWT server key
+        run: echo "${{ secrets.SF_JWT_KEY }}" | base64 --decode > server.key
+
+      - name: Authenticate to target org (JWT bearer)
+        run: |
+          sf org login jwt \
+            --client-id "${{ secrets.SF_CONSUMER_KEY }}" \
+            --jwt-key-file server.key \
+            --username "${{ secrets.SF_USERNAME }}" \
+            --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
+            --set-default
+
+      - name: Static analysis (Salesforce Code Analyzer)
+        run: |
+          sf plugins install code-analyzer
+          sf code-analyzer run \
+            --workspace "demo-app" \
+            --rule-selector Recommended \
+            --output-file code-analyzer-results.json \
+            --severity-threshold 2
+
+      - name: Upload Code Analyzer results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-analyzer-results
+          path: code-analyzer-results.json
+          if-no-files-found: ignore
+
+      - name: Validate deploy (check-only) + run Apex tests
+        run: |
+          sf project deploy start \
+            --dry-run \
+            --source-dir demo-app \
+            --test-level RunSpecifiedTests \
+            --tests DeploymentDemoServiceTest \
+            --wait 30
+
+      - name: Remove key
+        if: always()
+        run: rm -f server.key
