@@ -1,18 +1,19 @@
 name: PR Validate
 
-# Step 4 of the demo flow: when a PR is opened/updated against main, spin up a
-# fresh, throwaway scratch org, run the basic quality checks (static analysis +
-# Apex tests) against it, then delete it. This is the required status check that
-# gates the merge (see branch protection in .github/CICD-SETUP.md). On green,
-# auto-merge takes over.
+# Step 4 of the demo flow: when a feature/* branch is pushed, spin up a fresh,
+# throwaway scratch org, run the basic quality checks (static analysis + Apex
+# tests) against it, then delete it. This runs on the push event (not the PR
+# event) so it fires reliably even when auto-pr opens the PR via the Actions
+# token. The resulting "Scratch-org quality gate" check attaches to the head
+# commit, satisfies branch protection, and auto-merge takes over on green.
 
 on:
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - "feature/**"
 
 concurrency:
-  group: pr-validate-${{ github.event.pull_request.number }}
+  group: pr-validate-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
