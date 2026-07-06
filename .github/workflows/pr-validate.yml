@@ -1,28 +1,31 @@
 name: PR Validate
 
-# Runs on every pull request into main.
-# Proves the "basic quality checks" gate (R13): static analysis + a check-only
-# (validate) deploy that also runs the Apex tests. Nothing is written to the org.
+# Step 4 of the demo flow: when a reviewer APPROVES the PR, spin up a fresh,
+# throwaway scratch org, run the basic quality checks (static analysis + Apex
+# tests) against it, then delete it. This is the required status check that
+# gates the merge (see branch protection in .github/CICD-SETUP.md).
 
 on:
-  pull_request:
-    branches: [main]
+  pull_request_review:
+    types: [submitted]
 
-# Cancel superseded runs on the same PR to save minutes.
 concurrency:
-  group: pr-validate-${{ github.ref }}
+  group: pr-validate-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
   validate:
-    name: Static analysis + validate deploy
+    name: Scratch-org quality gate
+    # Only run once the review is an approval.
+    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout PR head
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "20"
 
@@ -32,14 +35,21 @@ jobs:
       - name: Decode JWT server key
         run: echo "${{ secrets.SF_JWT_KEY }}" | base64 --decode > server.key
 
-      - name: Authenticate to target org (JWT bearer)
+      - name: Authenticate to Dev Hub (JWT)
         run: |
           sf org login jwt \
-            --client-id "${{ secrets.SF_CONSUMER_KEY }}" \
+            --client-id "${{ secrets.SF_DEVHUB_CONSUMER_KEY }}" \
             --jwt-key-file server.key \
-            --username "${{ secrets.SF_USERNAME }}" \
-            --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
-            --set-default
+            --username "${{ secrets.SF_DEVHUB_USERNAME }}" \
+            --instance-url "https://login.salesforce.com" \
+            --alias devhub --set-default-dev-hub
+
+      - name: Create ephemeral scratch org
+        run: |
+          sf org create scratch \
+            --definition-file config/project-scratch-def.json \
+            --alias ci-scratch --duration-days 1 \
+            --target-dev-hub devhub --set-default
 
       - name: Static analysis (Salesforce Code Analyzer)
         run: |
@@ -47,25 +57,22 @@ jobs:
           sf code-analyzer run \
             --workspace "demo-app" \
             --rule-selector Recommended \
-            --output-file code-analyzer-results.json \
-            --severity-threshold 2
+            --severity-threshold 2 \
+            --output-file code-analyzer-results.json
 
-      - name: Upload Code Analyzer results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: code-analyzer-results
-          path: code-analyzer-results.json
-          if-no-files-found: ignore
+      - name: Deploy source to scratch org
+        run: sf project deploy start --source-dir demo-app
 
-      - name: Validate deploy (check-only) + run Apex tests
+      - name: Assign permission set + run Apex tests
         run: |
-          sf project deploy start \
-            --dry-run \
-            --source-dir demo-app \
-            --test-level RunSpecifiedTests \
-            --tests DeploymentDemoServiceTest \
-            --wait 30
+          sf org assign permset --name Bedrock_Deployment_Demo
+          sf apex run test \
+            --class-names DeploymentDemoServiceTest \
+            --code-coverage --result-format human --wait 20
+
+      - name: Delete scratch org
+        if: always()
+        run: sf org delete scratch --target-org ci-scratch --no-prompt || true
 
       - name: Remove key
         if: always()

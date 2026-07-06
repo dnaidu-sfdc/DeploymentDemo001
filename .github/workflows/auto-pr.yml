@@ -1,0 +1,35 @@
+name: Auto PR
+
+# Step 3 of the demo flow: pushing a feature/* branch automatically opens a PR
+# into main and turns on auto-merge, so once the review + quality gate pass the
+# PR merges itself (hands-off).
+
+on:
+  push:
+    branches:
+      - "feature/**"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  open-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Open PR (if none) and enable auto-merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          if gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
+            echo "PR already exists for $BRANCH"
+          else
+            gh pr create --base main --head "$BRANCH" \
+              --title "$BRANCH" \
+              --body "Automated PR opened for \`$BRANCH\`. Approve to trigger the scratch-org quality gate; it will auto-merge once green."
+          fi
+          # Requires repo setting "Allow auto-merge" + branch protection on main.
+          gh pr merge "$BRANCH" --auto --squash || echo "Auto-merge not enabled yet (check repo settings)."

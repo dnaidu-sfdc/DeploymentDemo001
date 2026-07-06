@@ -1,48 +1,67 @@
 # CI/CD Setup — Bedrock DevSecOps Demo
 
-This repo has two GitHub Actions workflows:
+Source-based pipeline that satisfies the badge requirement: **version control →
+basic quality checks → automatic deploy to a Salesforce org from the repo.**
 
-| Workflow | Trigger | What it does | Requirement |
-|---|---|---|---|
-| `pr-validate.yml` | PR → `main` | Code Analyzer scan + **check-only** deploy that runs Apex tests (nothing written to org) | R13 "basic quality checks" |
-| `deploy.yml` | push/merge → `main` | Deploys `demo-app` to the target org + runs Apex tests | R13 "auto-deployed to an org from the repo" |
+## The flow
 
-Both authenticate headlessly with the **JWT bearer flow** (no interactive login, no password in CI).
+```
+feature/* push ─► [auto-pr] opens PR + enables auto-merge
+                          │
+                    reviewer approves
+                          │
+        [pr-validate] create scratch org → Code Analyzer scan → deploy → Apex tests → delete org
+                          │  (required status check)
+                    auto-merge to main
+                          │
+        [deploy] deploy demo-app source → AFCAPQQA1 sandbox → run Apex tests
+```
+
+| Workflow | Trigger | Does |
+|---|---|---|
+| `auto-pr.yml` | push to `feature/**` | Opens a PR into `main`, enables auto-merge |
+| `pr-validate.yml` | PR **approved** | Ephemeral scratch org: scan + deploy + Apex tests (the quality gate) |
+| `deploy.yml` | push/merge to `main` | Deploys `demo-app` to the **AFCAPQQA1** sandbox + runs tests |
+
+Both org-touching workflows authenticate headlessly with the **JWT bearer flow**.
 
 ---
 
-## 1. Create a Connected App (in the target org)
-
-Setup → App Manager → **New Connected App**:
-
-- **Enable OAuth Settings** = on
-- **Callback URL**: `http://localhost:1717/OauthRedirect` (unused by JWT, but required)
-- **Use digital signatures** = on → upload `server.crt` (see step 2)
-- **OAuth Scopes**: `Manage user data via APIs (api)`, `Perform requests at any time (refresh_token, offline_access)`
-- Save, then **Manage → Edit Policies → Permitted Users = "Admin approved users are pre-authorized"**, and assign a permission set / profile that includes the integration user.
-- Copy the **Consumer Key** (this is `SF_CONSUMER_KEY`).
-
-## 2. Generate the certificate + key (locally)
+## 1. Generate one certificate + key (reused by both connected apps)
 
 ```bash
 openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt -subj "/CN=BedrockCICD"
 ```
 
-- Upload `server.crt` to the Connected App (step 1).
-- `server.key` stays local — it is **gitignored** (`*.key`) and must never be committed.
+- `server.key` stays local — it is **gitignored** (`*.key`); never commit it.
+- Upload `server.crt` to BOTH connected apps below.
 
-## 3. Add GitHub repository secrets
+## 2. Connected App in the Dev Hub (`AFCAPPRODDevHub`) — lets CI create scratch orgs
 
-Repo → Settings → Secrets and variables → Actions → **New repository secret**:
+Setup → App Manager → **New Connected App**:
+- Enable OAuth · Callback `http://localhost:1717/OauthRedirect`
+- **Use digital signatures** → upload `server.crt`
+- Scopes: `api`, `refresh_token offline_access`
+- Manage → **Admin approved users are pre-authorized**; assign your user
+- Copy the **Consumer Key** → secret `SF_DEVHUB_CONSUMER_KEY`
+
+## 3. Connected App in the AFCAPQQA1 sandbox — lets CI deploy there
+
+Same steps as above, in the **AFCAPQQA1** org. Copy its Consumer Key → `SF_SANDBOX_CONSUMER_KEY`.
+
+## 4. GitHub repository secrets
+
+Repo → Settings → Secrets and variables → Actions:
 
 | Secret | Value |
 |---|---|
-| `SF_CONSUMER_KEY` | Consumer Key from the Connected App |
-| `SF_USERNAME` | Integration/deploy username (e.g. your admin or a dedicated CI user) |
-| `SF_INSTANCE_URL` | `https://login.salesforce.com` (prod/dev-hub) or `https://test.salesforce.com` (sandbox) |
-| `SF_JWT_KEY` | **base64** of `server.key` (see below) |
+| `SF_JWT_KEY` | **base64** of `server.key` (shared by both) |
+| `SF_DEVHUB_CONSUMER_KEY` | Consumer Key from the Dev Hub connected app |
+| `SF_DEVHUB_USERNAME` | your Dev Hub username |
+| `SF_SANDBOX_CONSUMER_KEY` | Consumer Key from the AFCAPQQA1 connected app |
+| `SF_SANDBOX_USERNAME` | your AFCAPQQA1 username (e.g. `...@salesforce.com.afcapqqa1`) |
 
-Encode the key so newlines survive as a single-line secret:
+Encode the key as one line:
 
 ```bash
 # macOS/Linux
@@ -51,20 +70,31 @@ base64 -i server.key | pbcopy
 [Convert]::ToBase64String([IO.File]::ReadAllBytes("server.key")) | Set-Clipboard
 ```
 
-Paste the result as `SF_JWT_KEY`. The workflows run `base64 --decode` to restore it.
+## 5. Repo settings that make auto-merge + the gate work
 
-## 4. Test locally first
+- Settings → General → Pull Requests → **Allow auto-merge** = on
+- Settings → Branches → **Branch protection rule** for `main`:
+  - Require a pull request before merging · **Require 1 approval**
+  - **Require status checks to pass** → add **`Scratch-org quality gate`** (the `pr-validate` job)
+
+With those on: approve the PR → the gate runs in a scratch org → on green, GitHub auto-merges → `deploy.yml` ships to AFCAPQQA1.
+
+---
+
+## 6. Test JWT locally first
 
 ```bash
-sf org login jwt --client-id <CONSUMER_KEY> --jwt-key-file server.key \
-  --username <SF_USERNAME> --instance-url https://login.salesforce.com
+sf org login jwt --client-id <DEVHUB_CONSUMER_KEY> --jwt-key-file server.key \
+  --username <SF_DEVHUB_USERNAME> --instance-url https://login.salesforce.com
 ```
 
 If that succeeds, CI will too.
 
----
+## Demo run
 
-## Notes
-- The pipeline targets the `demo-app` package directory only (the isolated 2GP module).
-- `--severity-threshold 2` fails the PR build on high-severity Code Analyzer findings (the security/quality gate from Slides 10–11).
-- For a production target, switch `--test-level` to `RunLocalTests`.
+```bash
+git checkout -b feature/demo-change
+# make a small edit in demo-app/ ...
+git commit -am "demo: tweak" && git push -u origin feature/demo-change
+# → PR opens automatically; approve it in the GitHub UI and watch the Actions tab.
+```

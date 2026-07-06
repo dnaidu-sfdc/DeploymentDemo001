@@ -1,27 +1,26 @@
-name: Deploy to Org
+name: Deploy to Sandbox
 
-# Runs on every merge/push to main.
-# Proves "auto-deployed to an org from the repo" (R13): the source of truth (VCS)
-# drives the deployment. Runs the Apex tests as a release gate.
+# Step 6 of the demo flow: once the PR merges to main, deploy the source
+# straight from the repo into the AFCAPQQA1 sandbox and run the Apex tests.
+# This is the "automatically deployed to a Salesforce org from the repository"
+# requirement.
 
 on:
   push:
     branches: [main]
 
 concurrency:
-  group: deploy-main
+  group: deploy-sandbox
   cancel-in-progress: false
 
 jobs:
   deploy:
-    name: Deploy demo-app to target org
+    name: Deploy demo-app to AFCAPQQA1
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "20"
 
@@ -31,16 +30,16 @@ jobs:
       - name: Decode JWT server key
         run: echo "${{ secrets.SF_JWT_KEY }}" | base64 --decode > server.key
 
-      - name: Authenticate to target org (JWT bearer)
+      - name: Authenticate to AFCAPQQA1 sandbox (JWT)
         run: |
           sf org login jwt \
-            --client-id "${{ secrets.SF_CONSUMER_KEY }}" \
+            --client-id "${{ secrets.SF_SANDBOX_CONSUMER_KEY }}" \
             --jwt-key-file server.key \
-            --username "${{ secrets.SF_USERNAME }}" \
-            --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
-            --set-default
+            --username "${{ secrets.SF_SANDBOX_USERNAME }}" \
+            --instance-url "https://test.salesforce.com" \
+            --alias sandbox --set-default
 
-      - name: Deploy to org + run Apex tests
+      - name: Deploy source + run Apex tests
         run: |
           sf project deploy start \
             --source-dir demo-app \
